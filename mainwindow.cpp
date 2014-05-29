@@ -30,6 +30,23 @@ double MainWindow::sign(double a){
         return -1;
 }
 
+QColor MainWindow::traj_color(double i){
+    double max = *(max_element(zv.begin(),zv.end()));
+    double min = *(min_element(zv.begin(),zv.end()));
+    double r=10,g=50,b=10;
+    double coef = (0.25*zv[i]);
+    if (coef!=0){
+        r = r/coef+r;
+        g = g/coef+g;
+        b = b/coef+b;
+    }
+    if (g>255) g=255;
+    cout<<r<<" "<<g<<" "<<b<<endl;
+    //cout<<coef<<endl;
+    return QColor(r,g,b);
+
+}
+
 MainWindow::MainWindow(QWidget *parent) :  QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
     GenTraj();
@@ -44,6 +61,8 @@ MainWindow::MainWindow(QWidget *parent) :  QMainWindow(parent), ui(new Ui::MainW
     par->nb_beacon = ui->BeaconSpinBox->value();;
     par->box.resize(1);
     par->beacon_interval = ui->BeaconPosSpinBox->value();
+    ui->BeaconPosSpinBox->setValue(0);
+    ui->BeaconSpinBox->setValue(5);
 }
 
 MainWindow::~MainWindow() {
@@ -55,6 +74,7 @@ MainWindow::~MainWindow() {
     free(par->err);
     free(par);
     delete ui;
+
 }
 
 // Window Initialization
@@ -86,9 +106,9 @@ void MainWindow::GenTraj(){
         u[i-1]= 0.1*sign(sin(w*tt));
         yv[i] = yv[i-1] + dt*sin(thetav[i-1]);
         xv[i] = xv[i-1] + dt*cos(thetav[i-1]);
-        zv[i] =  1+dt*cos(t);
+        zv[i] =  2+cos(dt*i);
         vv[i] = sqrt(pow((xv[i]-xv[i-1])/dt,2)+pow((yv[i]-yv[i-1])/dt,2));
-        //zv[i] = 0;
+//        zv[i] = 0;
         thetav[i] = thetav[i-1] + dt*(u[i-1]);
         par->theta[i] = thetav[i];
         par->speedx[i] = (xv[i]-xv[i-1]);
@@ -113,7 +133,7 @@ void MainWindow::Simu(int method){
     nboutlier = 0;
     errpos.clear();
     par->box.clear();
-    par->box.push_back(IntervalVector(2,Interval(-25,25)));
+    par->box.push_back(IntervalVector(3,Interval(-25,25)));
     ui->checkBox->setChecked(false);
     for(int i=0;i<par->nb_beacon;i++){
         par->x[i]= 1*(25 - rand() % 50);
@@ -216,7 +236,8 @@ void MainWindow::repaint()
     RobotTraj();
     uint cpt=0;
     for(double i=0;i<6500-111;i=i+10){
-        R->DrawLine(xv[i],yv[i],xv[i+10],yv[i+10],QPen(Qt::darkGreen));
+        //R->DrawBox(xv[i]-0.01,xv[i]+0.01,yv[i]-0.01,yv[i]+0.01,QPen(traj_color(i)),QBrush(Qt::NoBrush));
+        R->DrawLine(xv[i],yv[i],xv[i+10],yv[i+10],QPen(traj_color(i)));
         cpt++;
     }
     if(drawarrow==1)    R->DrawArrow(par->robot_position[0],par->robot_position[1],

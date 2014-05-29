@@ -23,6 +23,7 @@ public:
     void GOMNE_fixed_q();
     void Zoom(int step);
     double sign(double a);
+    QColor traj_color(double i);
 
 private:
     Ui::MainWindow *ui;
