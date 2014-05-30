@@ -41,7 +41,7 @@ QColor MainWindow::traj_color(double i){
         b = b/coef+b;
     }
     if (g>255) g=255;
-    cout<<r<<" "<<g<<" "<<b<<endl;
+    //cout<<r<<" "<<g<<" "<<b<<endl;
     //cout<<coef<<endl;
     return QColor(r,g,b);
 
@@ -247,7 +247,7 @@ void MainWindow::repaint()
     double yins=par->robot_position_found[1];
     double zins=par->robot_position_found[2];
     if (drawapproxpos==1)   R->DrawRobot2(xins,yins,par->robot_position[3]);
-    double errdist = sqrt(pow(xins-par->robot_position[0],2)+pow(yins-par->robot_position[1],2));
+    double errdist = sqrt(pow(xins-par->robot_position[0],2)+pow(yins-par->robot_position[1],2)+pow(zins-par->robot_position[2],2));
     if (isnan(errdist)==0){
         errpos.push_back(errdist);
     }
@@ -342,7 +342,7 @@ void MainWindow::GOMNE_fixed_q()
     par->isinside=0;
 
     par->nb_beacon = ui->BeaconSpinBox->value();
-    cout<<"q"<<par->q<<endl;
+    //cout<<"q"<<par->q<<endl;
     ui->EpsilonSpinBox->setValue(1);
     for (uint i=0;i<100;i++){
        par->err[i] = 0.2;
@@ -359,7 +359,7 @@ void MainWindow::GOMNE_fixed_q()
             par->q--;
             ui->InterSpinBox->setValue(par->q);
             Sivia sivia(*R,par);
-            cout<<"q--"<<endl;
+            //cout<<"q--"<<endl;
         }
         if(par->in_perhaps==1){
             par->epsilon_sivia/=2;
